@@ -1,29 +1,39 @@
-# ! Ran on Python 3.8.10
+#! Ran on Python 3.8.10
 
-class Machine:
+class FileSystem:
     def __init__(self):
-        self.Q = []
-        self.Σ = []
-        self.δ = {}  # we initialize � here
-        self.q0 = ""
-        self.qf = []
+        self.file = list()
 
-    def description(self):
-        print(f"M = <Q, Σ, δ, {self.q0}, {self.qf} >")
-        print(f"Q = {self.Q}")
-        print(f"Σ = {self.Σ}")
-        print(f"δ = {self.δ}")
-        print(f"qo = {self.q0}")
-        print(f"qf = {self.qf}")
+    def createFile(self, inFilename, readOnly):
+        if len(self.file) >= 10:
+            return -1  # ! File system is full
+        self.file.append([inFilename, readOnly])
 
-    def addArrow(self, q1, symbol, q2):
-        arrow = (q1, symbol)
-        self.δ[arrow] = q2
+    def deleteFile(self, inFilename):
+        prelen = len(self.file)
+        #! Remove all files with the same name
+        self.file = [x for x in self.file if x[0] != inFilename]
+        postlen = len(self.file)
 
-    def removeArrow(self, q1, symbol, q2):
-        arrow = (q1, symbol)
-        del self.δ[arrow]
+        #! Used length of the list to check if the file was deleted
+        if prelen == postlen:
+            return 0
 
+        else:
+            return 1
+
+    def readFile(self, inFilename):
+
+        for i in self.file:
+            if i[0] == inFilename:
+                print(i[1], end='')  # ! prints the message without newline
+
+
+def main():
+    fs = FileSystem()
+    fs.createFile("file1", False)
+    fs.createFile("file2", False)
+    fs.createFile("file3", False)
 
 
 if __name__ == "__main__":
