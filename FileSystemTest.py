@@ -13,6 +13,7 @@ class FileSystem:
         for i, j in enumerate(self.file):
             if not j:
                 self.file[i] = [inFilename, readOnly, ""]
+                break
         print(inFilename)
 
     def deleteFile(self, inFilename: str):
@@ -33,6 +34,7 @@ class FileSystem:
             if i:
                 if i[0] == inFilename:
                     print(i[2], end='')  # ! prints the message without newline
+        print()
 
     def writefile(self, inFilename, inMessage):
         # ! Number of blocks needed for message
@@ -41,7 +43,7 @@ class FileSystem:
         for i, j in enumerate(self.file):
             if j:
                 if j[0] == inFilename and j[1] == False:
-                    if self.file.count([]) + message_block > 9:
+                    if self.file.count([]) + 1 - message_block > 10:
                         return print(0)  # ! File system is full
 
                 if len(inMessage) <= 10:
@@ -53,21 +55,28 @@ class FileSystem:
                     string_split = [inMessage[y-10:y]
                                     for y in range(10, len(inMessage)+10, 10)]
 
-                    self.file[i][2] = string_split[0]
-                    string_split.pop(0)  # ! remove item as they are used
+                    # ! remove item as they are used
+                    self.file[i][2] = string_split.pop(0)
 
-                    while string_split:
-                        for i, j in enumerate(self.file):
-                            if not j:
-                                self.file[i] = [inFilename,
-                                                False,
-                                                string_split.pop(0)]
+                    for i, j in enumerate(self.file):
+                        if not j:
+                            self.file[i] = [inFilename,
+                                            False,
+                                            string_split.pop(0)]
+
+                            if not string_split:
+                                break
 
 
 def main():
     fs = FileSystem()
     fs.createFile("file1", False)
     fs.writefile("file1", "This is the first phrase.")
+
+    # fs.createFile("file2", False)
+    # fs.writefile("file2", "Goodbye, cruel World! I can take it no more!!")
+
+    # fs.readFile("file1")
 
 
 if __name__ == "__main__":
