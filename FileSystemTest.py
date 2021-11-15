@@ -1,15 +1,21 @@
 #! Ran on Python 3.8.10
+import math
+
 
 class FileSystem:
     def __init__(self):
-        self.file = list()
+        self.file = [[] for i in range(10)]
 
-    def createFile(self, inFilename, readOnly):
-        if len(self.file) >= 10:
+    def createFile(self, inFilename: str, readOnly: bool):
+        if self.file.count([]) == 0:
             return -1  # ! File system is full
-        self.file.append([inFilename, readOnly])
 
-    def deleteFile(self, inFilename):
+        for i, j in enumerate(self.file):
+            if not j:
+                self.file[i] = [inFilename, readOnly, ""]
+        print(inFilename)
+
+    def deleteFile(self, inFilename: str):
         prelen = len(self.file)
         #! Remove all files with the same name
         self.file = [x for x in self.file if x[0] != inFilename]
@@ -19,21 +25,49 @@ class FileSystem:
         if prelen == postlen:
             return 0
 
-        else:
-            return 1
+        return 1
 
     def readFile(self, inFilename):
 
         for i in self.file:
-            if i[0] == inFilename:
-                print(i[1], end='')  # ! prints the message without newline
+            if i:
+                if i[0] == inFilename:
+                    print(i[2], end='')  # ! prints the message without newline
+
+    def writefile(self, inFilename, inMessage):
+        # ! Number of blocks needed for message
+        message_block = math.ceil(len(inMessage) / 10)
+
+        for i, j in enumerate(self.file):
+            if j:
+                if j[0] == inFilename and j[1] == False:
+                    if self.file.count([]) + message_block > 9:
+                        return print(0)  # ! File system is full
+
+                if len(inMessage) <= 10:
+                    self.file[i][2] = inMessage
+                    return print(1)
+
+                else:
+                    #! split strings into blocks of 10
+                    string_split = [inMessage[y-10:y]
+                                    for y in range(10, len(inMessage)+10, 10)]
+
+                    self.file[i][2] = string_split[0]
+                    string_split.pop(0)  # ! remove item as they are used
+
+                    while string_split:
+                        for i, j in enumerate(self.file):
+                            if not j:
+                                self.file[i] = [inFilename,
+                                                False,
+                                                string_split.pop(0)]
 
 
 def main():
     fs = FileSystem()
     fs.createFile("file1", False)
-    fs.createFile("file2", False)
-    fs.createFile("file3", False)
+    fs.writefile("file1", "This is the first phrase.")
 
 
 if __name__ == "__main__":
